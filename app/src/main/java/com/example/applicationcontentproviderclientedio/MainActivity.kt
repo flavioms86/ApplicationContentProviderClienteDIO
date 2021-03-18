@@ -1,7 +1,10 @@
 package com.example.applicationcontentproviderclientedio
 
+import android.database.Cursor
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -15,10 +18,27 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         notesRecycler = findViewById(R.id.client_list)
+        getContentProvider()
+
         notesRefreshButton = findViewById(R.id.client_button_refresh)
+        notesRefreshButton.setOnClickListener { getContentProvider() }
 
-        notesRefreshButton.setOnClickListener {  }
+    }
 
+    private fun getContentProvider(){
+
+        try {
+            val url = "content://com.example.contentproviderdio.provider/notes"
+            val data = Uri.parse(url)
+            val cursor: Cursor? =
+                contentResolver.query(data, null, null, null, "title")
+            notesRecycler.apply {
+                layoutManager = LinearLayoutManager(this@MainActivity)
+                adapter = ClientAdapter(cursor as Cursor)
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
     }
 
 
